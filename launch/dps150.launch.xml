@@ -1,0 +1,12 @@
+<launch>
+  <arg name="port" default="/dev/ttyACM0"/>
+  <arg name="connect_on_start" default="true"/>
+  <arg name="auto_reconnect" default="true"/>
+
+  <node pkg="fnirsi_dps150_driver" exec="dps150_node" name="dps150" output="screen">
+    <param from="$(find-pkg-share fnirsi_dps150_driver)/config/dps150.yaml"/>
+    <param name="port" value="$(var port)"/>
+    <param name="connect_on_start" value="$(var connect_on_start)"/>
+    <param name="auto_reconnect" value="$(var auto_reconnect)"/>
+  </node>
+</launch>

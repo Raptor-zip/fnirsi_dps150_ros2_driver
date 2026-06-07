@@ -1,0 +1,4 @@
+# FNIRSI DPS-150 as exposed by the Artery AT32 USB CDC firmware.
+# Install to /etc/udev/rules.d/99-fnirsi-dps150.rules, then reload udev.
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="2e3c", ATTRS{idProduct}=="5740", SYMLINK+="fnirsi_dps150", GROUP="dialout", MODE="0660"

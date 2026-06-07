@@ -1,0 +1,12 @@
+uint8 OVP=1
+uint8 OCP=2
+uint8 OPP=3
+uint8 OTP=4
+uint8 LVP=5
+
+uint8 kind
+float32 value
+bool refresh
+---
+bool success
+string message

@@ -1,0 +1,5 @@
+uint8 value
+bool refresh
+---
+bool success
+string message

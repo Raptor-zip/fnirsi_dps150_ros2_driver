@@ -1,0 +1,14 @@
+dps150:
+  ros__parameters:
+    # Prefer a stable path from /dev/serial/by-id on production systems.
+    port: /dev/ttyACM0
+    baud_rate: 115200
+    connect_on_start: true
+    auto_reconnect: true
+    auto_refresh_after_write: true
+    enforce_setpoint_limits: true
+    allow_output_enable_during_protection: false
+    command_delay_ms: 50
+    read_timeout_ms: 100
+    reconnect_period_ms: 2000
+    state_publish_period_ms: 1000
