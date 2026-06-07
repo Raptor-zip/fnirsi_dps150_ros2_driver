@@ -10,7 +10,7 @@ jobs:
     container: ros:humble-ros-base-jammy
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Install dependencies
         run: |
