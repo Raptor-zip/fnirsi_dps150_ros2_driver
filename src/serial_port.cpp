@@ -149,7 +149,11 @@ std::size_t SerialPort::read_some(
   if (n > 0) {
     return static_cast<std::size_t>(n);
   }
-  if (n == 0 || errno == EAGAIN || errno == EWOULDBLOCK) {
+  if (n == 0) {
+    // select() reported the fd ready but read() returned 0 — EOF / device gone.
+    throw std::runtime_error("serial read returned EOF (device disconnected)");
+  }
+  if (errno == EAGAIN || errno == EWOULDBLOCK) {
     return 0;
   }
 
