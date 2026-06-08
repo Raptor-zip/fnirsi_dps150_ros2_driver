@@ -13,7 +13,7 @@ happen through `enable_output` or the `output_enable` topic.
 
 - ROS 2 package: `ament_cmake`
 - Implementation language: C++17
-- Tested target: ROS 2 Humble on Linux
+- Tested targets: ROS 2 Humble and Jazzy on Linux
 - Serial transport: POSIX `termios`, no Python runtime dependency
 - Protocol source: reverse-engineered `fnirsi-dps-150` WebSerial implementation
 
@@ -26,7 +26,7 @@ mkdir -p ~/ros2_ws/src
 cd ~/ros2_ws/src
 git clone https://github.com/Raptor-zip/fnirsi_dps150_ros2_driver.git fnirsi_dps150_driver
 cd ~/ros2_ws
-source /opt/ros/humble/setup.bash
+source /opt/ros/humble/setup.bash   # or: source /opt/ros/jazzy/setup.bash
 colcon build --packages-select fnirsi_dps150_driver
 source install/setup.bash
 ```
@@ -42,13 +42,17 @@ Your user must have serial permission, typically through the `dialout` group:
 sudo usermod -aG dialout "$USER"
 ```
 
-Log out and back in after changing group membership.
+Log out and back in after changing group membership. If you see
+`Permission denied` on `/dev/ttyACM0` or `/dev/fnirsi_dps150` immediately after
+running `usermod`, the current shell hasn't picked up the new group yet — run
+`newgrp dialout` to start a sub-shell with the group applied, or just log out
+and back in.
 
 For production rigs, you can also install a udev rule that creates a stable
-`/dev/fnirsi_dps150` symlink:
+`/dev/fnirsi_dps150` symlink (run from the workspace root, e.g. `~/ros2_ws`):
 
 ```sh
-sudo cp docs/99-fnirsi-dps150.rules /etc/udev/rules.d/
+sudo cp src/fnirsi_dps150_driver/docs/99-fnirsi-dps150.rules /etc/udev/rules.d/
 sudo udevadm control --reload-rules
 sudo udevadm trigger
 ```

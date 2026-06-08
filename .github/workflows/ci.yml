@@ -5,9 +5,21 @@ on:
   pull_request:
 
 jobs:
-  humble:
-    runs-on: ubuntu-22.04
-    container: ros:humble-ros-base-jammy
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - distro: humble
+            runner: ubuntu-22.04
+            container: ros:humble-ros-base-jammy
+          - distro: jazzy
+            runner: ubuntu-24.04
+            container: ros:jazzy-ros-base-noble
+
+    name: ${{ matrix.distro }}
+    runs-on: ${{ matrix.runner }}
+    container: ${{ matrix.container }}
 
     steps:
       - uses: actions/checkout@v6
@@ -17,19 +29,19 @@ jobs:
           apt-get update
           apt-get install -y \
             libxml2-utils \
-            ros-humble-ament-cmake-gtest \
-            ros-humble-diagnostic-updater \
-            ros-humble-std-msgs \
-            ros-humble-std-srvs
+            ros-${{ matrix.distro }}-ament-cmake-gtest \
+            ros-${{ matrix.distro }}-diagnostic-updater \
+            ros-${{ matrix.distro }}-std-msgs \
+            ros-${{ matrix.distro }}-std-srvs
 
       - name: Build
         run: |
-          . /opt/ros/humble/setup.sh
+          . /opt/ros/${{ matrix.distro }}/setup.sh
           colcon build --packages-select fnirsi_dps150_driver --event-handlers console_direct+
 
       - name: Test
         run: |
-          . /opt/ros/humble/setup.sh
+          . /opt/ros/${{ matrix.distro }}/setup.sh
           colcon test --packages-select fnirsi_dps150_driver --event-handlers console_direct+
           colcon test-result --verbose
 
