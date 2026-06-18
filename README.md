@@ -2,6 +2,8 @@
 
 ROS 2 C++ driver for the FNIRSI DPS-150 programmable DC power supply.
 
+![FNIRSI DPS-150 ROS 2 driver overview](docs/card_features.png)
+
 This package talks to the DPS-150 over its USB CDC serial interface. It exposes
 device telemetry as a ROS 2 topic and provides services/subscriptions for setpoints,
 presets, protection thresholds, UI settings, metering, and output enable.
