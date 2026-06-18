@@ -118,11 +118,38 @@ Measured on the real device (DPS-150 on `/dev/ttyACM0` @ 115200 baud, ROS 2 Humb
 | Device telemetry frames (`frames_received`) | ~9.3 Hz |
 | `/dps150/state` topic | ~9.3 Hz |
 
-So feedback arrives at roughly **9–10 Hz**. You can confirm it yourself with:
+So `/dps150/state` is published at roughly **9–14 Hz** (it varies with the device
+stream). You can confirm it yourself with:
 
 ```sh
 ros2 topic hz /dps150/state
 ```
+
+#### Effective value-update rate per field
+
+The topic rate is **not** the rate at which the analog readings actually change.
+The DPS-150 refreshes its measured values more slowly than it streams frames, so
+each value typically repeats 7–8 times before it updates. Measured on the real
+device (12 V / 0.1 A output enabled, ~30 s window, topic ~13 Hz), counting how
+often each field's value actually changes:
+
+| Field | Effective update rate | Avg. repeats per value |
+|---|---:|---:|
+| `output_current` | ~1.8 Hz | 7.2 |
+| `output_power` | ~1.8 Hz | 7.2 |
+| `temperature` | ~1.8 Hz | 7.3 |
+| `input_voltage` | ~1.6 Hz | 8.2 |
+| `output_voltage` | n/a* | n/a* |
+
+\* `output_voltage` stayed pinned at the regulated 12.0 V during the test, so its
+refresh rate could not be inferred from value changes.
+
+Practical takeaway: treat the **real telemetry refresh as ~2 Hz** even though the
+topic publishes at ~13 Hz. If you only care about new readings, deduplicate on the
+subscriber side (compare against the last value) instead of processing every
+message, and use the `connected` field plus the `/diagnostics` `last_state_age_sec`
+value to judge freshness — the message `stamp` is set at publish time and always
+looks current even when the underlying data is stale.
 
 Useful runtime parameters:
 
