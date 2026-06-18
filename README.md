@@ -103,6 +103,27 @@ Diagnostics are published on the standard ROS topic:
 ros2 topic echo /diagnostics
 ```
 
+### Feedback / state rate
+
+The node publishes `/dps150/state` on **every telemetry frame received from the
+device**, so the topic rate tracks the device's own streaming rate rather than a
+fixed timer. `state_publish_period_ms` (default `1000`) only acts as a keepalive
+lower bound that re-publishes the last snapshot when no frames arrive.
+
+Measured on the real device (DPS-150 on `/dev/ttyACM0` @ 115200 baud, ROS 2 Humble,
+~21.6 s window):
+
+| Source | Measured rate |
+|---|---:|
+| Device telemetry frames (`frames_received`) | ~9.3 Hz |
+| `/dps150/state` topic | ~9.3 Hz |
+
+So feedback arrives at roughly **9–10 Hz**. You can confirm it yourself with:
+
+```sh
+ros2 topic hz /dps150/state
+```
+
 Useful runtime parameters:
 
 | Parameter | Default | Purpose |
