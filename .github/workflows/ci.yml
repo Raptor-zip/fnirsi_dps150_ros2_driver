@@ -26,13 +26,22 @@ jobs:
 
       - name: Install dependencies
         run: |
-          apt-get update
-          apt-get install -y \
-            libxml2-utils \
-            ros-${{ matrix.distro }}-ament-cmake-gtest \
-            ros-${{ matrix.distro }}-diagnostic-updater \
-            ros-${{ matrix.distro }}-std-msgs \
-            ros-${{ matrix.distro }}-std-srvs
+          # Retry to tolerate transient ROS apt-mirror sync lag (stale index -> 404).
+          for attempt in 1 2 3 4 5; do
+            apt-get update
+            if apt-get install -y \
+              libxml2-utils \
+              ros-${{ matrix.distro }}-ament-cmake-gtest \
+              ros-${{ matrix.distro }}-diagnostic-updater \
+              ros-${{ matrix.distro }}-std-msgs \
+              ros-${{ matrix.distro }}-std-srvs; then
+              exit 0
+            fi
+            echo "Install attempt ${attempt} failed; retrying in 15s..."
+            sleep 15
+          done
+          echo "Dependency install failed after 5 attempts" >&2
+          exit 1
 
       - name: Build
         run: |
